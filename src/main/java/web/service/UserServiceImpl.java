@@ -5,17 +5,12 @@ import web.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private List<User> users = new ArrayList<>();
-
-    public UserServiceImpl() {
-        users.add(new User(1L, "Иван Иванов", "ivan@example.com"));
-        users.add(new User(2L, "Петр Петров", "petr@example.com"));
-        users.add(new User(3L, "Светлана Светлова", "svetlana@example.com"));
-    }
 
     @Override
     public List<User> findAll() {
@@ -23,9 +18,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void save(User user) {
-        long newId = users.size() + 1;
-        user.setId(newId);
+    public void addUser(User user) {
         users.add(user);
     }
 
@@ -35,22 +28,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void update(User user) {
-        for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getId().equals(user.getId())) {
-                users.set(i, user);
-                return;
-            }
+    public void updateUser(User user) {
+        Optional<User> existingUserOpt = users.stream()
+                .filter(u -> u.getId().equals(user.getId()))
+                .findFirst();
+
+        if (existingUserOpt.isPresent()) {
+            int index = users.indexOf(existingUserOpt.get());
+            users.set(index, user);
         }
     }
 
     @Override
     public User findById(Long id) {
-        for (User user : users) {
-            if (user.getId().equals(id)) {
-                return user;
-            }
-        }
-        return null;
+        return users.stream()
+                .filter(user -> user.getId().equals(id))
+                .findFirst()
+                .orElse(null);
     }
 }

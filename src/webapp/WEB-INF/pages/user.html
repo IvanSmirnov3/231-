@@ -6,16 +6,24 @@
 <body>
 <h2>Добавить / Редактировать пользователя</h2>
 
-<form th:action="@{/users}" th:object="${user}" method="post">
-    <input type="hidden" th:field="*{id}" />
+<form th:if="${user.id == null}" th:action="@{/users}" th:object="${user}" method="post">
+    <label for="name_new">Имя:</label>
+    <input type="text" id="name_new" th:field="*{name}" required />
 
-    <label for="name">Имя:</label>
-    <input type="text" id="name" th:field="*{name}" required />
+    <label for="email_new">Email:</label>
+    <input type="email" id="email_new" th:field="*{email}" required />
 
-    <label for="email">Email:</label>
-    <input type="email" id="email" th:field="*{email}" required />
+    <button type="submit">Добавить</button>
+</form>
 
-    <button type="submit">Сохранить</button>
+<form th:if="${user.id != null}" th:action="@{/users/update/{id}(id=${user.id})}" th:object="${user}" method="post">
+    <label for="name_edit">Имя:</label>
+    <input type="text" id="name_edit" th:field="*{name}" required />
+
+    <label for="email_edit">Email:</label>
+    <input type="email" id="email_edit" th:field="*{email}" required />
+
+    <button type="submit">Обновить</button>
 </form>
 
 <hr/>
@@ -39,7 +47,6 @@
 
         <td>
             <a th:href="@{/users/edit/{id}(id=${u.id})}">Редактировать</a>
-
             <a th:href="@{/users/delete/{id}(id=${u.id})}"
                onclick="return confirm('Вы уверены?');">Удалить</a>
         </td>
